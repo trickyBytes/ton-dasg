@@ -17,6 +17,7 @@ export default function SignInForm() {
             await signInWithEmailAndPassword(auth, email, password);
             // User signed in successfully.
             console.log("User signed in!");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             setError(err.message);
             console.error("Error signing in:", err);

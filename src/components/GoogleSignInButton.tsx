@@ -14,6 +14,7 @@ export default function GoogleSignInButton() {
             await signInWithPopup(auth, provider);
             // User signed in with Google!
             console.log("User signed in with Google!");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             setError(err.message);
             console.error("Error signing in with Google:", err);
