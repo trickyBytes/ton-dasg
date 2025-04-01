@@ -1,4 +1,5 @@
 import SignInForm from "@/components/SignInForm";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
         Hello world!
       </h1>
       <SignInForm />
+      <GoogleSignInButton />
     </main>
   )
 }
