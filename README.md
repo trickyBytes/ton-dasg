@@ -18,6 +18,38 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=""
 NEXT_PUBLIC_FIREBASE_APP_ID=""
 ```
 
+## Pomodoro Timer Features
+
+This application implements a basic Pomodoro timer with the following features:
+
+-   **Configurable Timer Modes**: Switch between Pomodoro, Short Break, and Long Break sessions. Durations are currently set for development:
+    -   Pomodoro: 10 seconds
+    -   Short Break: 10 seconds
+    -   Long Break: 30 seconds
+-   **Manual Start/Pause**: Timers do not start automatically; you initiate and pause them manually.
+-   **Pomodoro Cycle Tracking**: The application tracks completed Pomodoro sessions. After 3 Pomodoros, a Long Break is initiated; otherwise, a Short Break follows a Pomodoro.
+-   **Notification Sound**: An audio notification plays when a timer session ends. (Requires `public/notification.mp3` to be present).
+-   **Task Management**:
+    -   Add new tasks to a list.
+    -   Select a task to associate Pomodoro sessions with it.
+    -   The number of Pomodoros completed for a selected task is recorded against it.
+-   **Visual Feedback**:
+    -   The currently active timer mode button (Pomodoro, Short Break, Long Break) is highlighted.
+    -   Selected tasks in the list are visually highlighted with a distinct border.
+    -   The text of the currently selected task is displayed above the task list for easy reference.
+-   **Flat-file Storage**: Tasks are currently stored in a local `tasks.json` file at the project root. This file is automatically created if it doesn't exist.
+
+### Usage
+
+1.  **Start the development server** as described in "Getting Started".
+2.  **Add tasks** using the input field and "Add" button below the timer.
+3.  **Select a task** by clicking on it in the task list. The selected task will be highlighted, and its name will appear above the task list.
+4.  **Start a Pomodoro** by clicking the "START" button.
+5.  When a Pomodoro finishes, the application will automatically transition to the next break (Short or Long) based on the Pomodoro cycle rules. You will need to click "START" to begin the break.
+6.  The `pomodoroCount` for the selected task will increment after each completed Pomodoro session.
+7.  To switch modes manually, click the respective "Pomodoro", "Short Break", or "Long Break" buttons.
+8.  Ensure you have an `notification.mp3` file in your `public` directory for the audio notification to work.
+
 ## Getting Started
 
 First, run the development server:
