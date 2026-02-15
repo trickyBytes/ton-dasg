@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -16,7 +16,7 @@ async function getTasks(): Promise<Task[]> {
     const data = await fs.readFile(tasksFilePath, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
-    if (error.code === 'ENOENT') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'ENOENT') {
       return [];
     }
     throw error;
@@ -27,8 +27,9 @@ async function saveTasks(tasks: Task[]) {
   await fs.writeFile(tasksFilePath, JSON.stringify(tasks, null, 2));
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function PUT(request: NextRequest, context: any) {
+  const id = context.params.id;
   const tasks = await getTasks();
   const taskIndex = tasks.findIndex((task) => task.id === id);
 

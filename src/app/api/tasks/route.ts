@@ -16,8 +16,7 @@ async function getTasks(): Promise<Task[]> {
     const data = await fs.readFile(tasksFilePath, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
-    // If the file doesn't exist, return an empty array
-    if (error.code === 'ENOENT') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'ENOENT') {
       return [];
     }
     throw error;
