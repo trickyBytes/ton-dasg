@@ -27,9 +27,8 @@ async function saveTasks(tasks: Task[]) {
   await fs.writeFile(tasksFilePath, JSON.stringify(tasks, null, 2));
 }
 
-export async function PUT(request: Request, context: { params: { id: string } }) {
-
-  const { id } = context.params;
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
+  const id = params.id;
   const tasks = await getTasks();
   const taskIndex = tasks.findIndex((task) => task.id === id);
 
