@@ -16,6 +16,58 @@ export default function Home() {
 
   const [pomodoroCount, setPomodoroCount] = useState(0);
 
+  type Task = {
+    id: string;
+    text: string;
+    completed: boolean;
+    pomodoros: number;
+  };
+
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTaskText, setNewTaskText] = useState('');
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const response = await fetch('/api/tasks');
+      const data = await response.json();
+      setTasks(data);
+    };
+    fetchTasks();
+  }, []);
+
+  const addTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTaskText.trim()) return;
+
+    const response = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text: newTaskText }),
+    });
+
+    if (response.ok) {
+      const newTask = await response.json();
+      setTasks([...tasks, newTask]);
+      setNewTaskText('');
+    }
+  };
+
+  const incrementPomodoro = async () => {
+    if (!selectedTaskId) return;
+
+    const response = await fetch(`/api/tasks/${selectedTaskId}/increment`, {
+      method: 'PUT',
+    });
+
+    if (response.ok) {
+      const updatedTask = await response.json();
+      setTasks(tasks.map(task => task.id === selectedTaskId ? updatedTask : task));
+    }
+  };
+
   const resetTimer = useCallback((mode: keyof typeof timerModes, autoStart = false) => {
     setTimerMode(mode);
     setTime(timerModes[mode]);
@@ -37,6 +89,7 @@ export default function Home() {
       audioRef.current?.play();
 
       if (timerMode === 'pomodoro') {
+        incrementPomodoro();
         const newPomodoroCount = pomodoroCount + 1;
         setPomodoroCount(newPomodoroCount);
         if (newPomodoroCount % 3 === 0) {
@@ -53,7 +106,7 @@ export default function Home() {
         clearInterval(interval);
       }
     };
-  }, [isActive, time, timerMode, pomodoroCount, resetTimer]);
+  }, [isActive, time, timerMode, pomodoroCount, resetTimer, selectedTaskId]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -108,12 +161,50 @@ export default function Home() {
         {timerMode !== 'pomodoro' && (
           <p className="mb-2">Current mode: {timerMode === 'shortBreak' ? 'Short Break' : 'Long Break'}</p>
         )}
+        {selectedTaskId && (
+          <p className="mb-2">Selected task: {tasks.find(task => task.id === selectedTaskId)?.text}</p>
+        )}
       </div>
       <div className="mt-8 w-full max-w-md">
-        <h2 className="text-xl font-bold text-left mb-4">Tasks</h2>
-        <div className="bg-gray-800/50 p-4 rounded-lg text-left">
-          Task list placeholder
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-left">Tasks</h2>
+          {/* Placeholder for task menu if needed */}
         </div>
+        <div className="bg-gray-800/50 p-4 rounded-lg text-left">
+          {tasks.length > 0 ? (
+            <ul>
+              {tasks.map((task) => (
+                <li
+                  key={task.id}
+                  onClick={() => setSelectedTaskId(task.id)}
+                  className={`flex items-center justify-between mb-2 p-2 rounded-lg cursor-pointer ${
+                    selectedTaskId === task.id ? 'bg-gray-700 border-l-4 border-red-500' : ''
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <input type="checkbox" checked={task.completed} readOnly className="mr-2" />
+                    <span>{task.text}</span>
+                  </div>
+                  <span className="text-gray-400">{task.pomodoros || 0}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-400">No tasks yet. Add one below!</p>
+          )}
+        </div>
+        <form onSubmit={addTask} className="mt-4 flex">
+          <input
+            type="text"
+            value={newTaskText}
+            onChange={(e) => setNewTaskText(e.target.value)}
+            placeholder="Add a new task"
+            className="bg-gray-700 text-white rounded-l-lg p-2 flex-grow"
+          />
+          <button type="submit" className="bg-red-500 text-white font-bold rounded-r-lg px-4">
+            Add
+          </button>
+        </form>
       </div>
       <audio ref={audioRef} src="/notification.mp3" preload="auto" />
     </div>
