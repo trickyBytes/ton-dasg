@@ -5,8 +5,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 export default function Home() {
   const timerModes = {
     pomodoro: 10, // 10 seconds for dev work
-    shortBreak: 5 * 60,
-    longBreak: 15 * 60,
+    shortBreak: 10, // 10 seconds for dev work
+    longBreak: 30, // 30 seconds for dev work
   };
 
   const [timerMode, setTimerMode] = useState("pomodoro");
@@ -14,11 +14,13 @@ export default function Home() {
   const [isActive, setIsActive] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const resetTimer = useCallback((mode: keyof typeof timerModes) => {
-    setIsActive(false);
+  const [pomodoroCount, setPomodoroCount] = useState(0);
+
+  const resetTimer = useCallback((mode: keyof typeof timerModes, autoStart = false) => {
     setTimerMode(mode);
     setTime(timerModes[mode]);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    setIsActive(autoStart);
+  }, [timerModes]);
 
 
   useEffect(() => {
@@ -33,13 +35,17 @@ export default function Home() {
         clearInterval(interval);
       }
       audioRef.current?.play();
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0; // Rewind to the start
-            audioRef.current.play();
-          }
-        }, i * 2000); // Play 5 times with 1s delay
+
+      if (timerMode === 'pomodoro') {
+        const newPomodoroCount = pomodoroCount + 1;
+        setPomodoroCount(newPomodoroCount);
+        if (newPomodoroCount % 3 === 0) {
+          resetTimer('longBreak', false);
+        } else {
+          resetTimer('shortBreak', false);
+        }
+      } else { // shortBreak or longBreak
+        resetTimer('pomodoro', false);
       }
     }
     return () => {
@@ -47,7 +53,7 @@ export default function Home() {
         clearInterval(interval);
       }
     };
-  }, [isActive, time]);
+  }, [isActive, time, timerMode, pomodoroCount, resetTimer]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -96,6 +102,12 @@ export default function Home() {
             {isActive ? "PAUSE" : "START"}
           </button>
         </div>
+      </div>
+      <div className="mt-8 w-full max-w-md text-gray-400 text-left">
+        <p className="mb-2">Pomodoros completed: {pomodoroCount}</p>
+        {timerMode !== 'pomodoro' && (
+          <p className="mb-2">Current mode: {timerMode === 'shortBreak' ? 'Short Break' : 'Long Break'}</p>
+        )}
       </div>
       <div className="mt-8 w-full max-w-md">
         <h2 className="text-xl font-bold text-left mb-4">Tasks</h2>
