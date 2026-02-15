@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 
 export default function Home() {
-  const timerModes = {
+  const timerModes = useMemo(() => ({
     pomodoro: 10, // 10 seconds for dev work
     shortBreak: 10, // 10 seconds for dev work
     longBreak: 30, // 30 seconds for dev work
-  };
+  }), []);
 
   const [timerMode, setTimerMode] = useState("pomodoro");
   const [time, setTime] = useState(timerModes[timerMode as keyof typeof timerModes]);
@@ -55,7 +55,7 @@ export default function Home() {
     }
   };
 
-  const incrementPomodoro = async () => {
+  const incrementPomodoro = useCallback(async () => {
     if (!selectedTaskId) return;
 
     const response = await fetch(`/api/tasks/${selectedTaskId}/increment`, {
@@ -66,7 +66,7 @@ export default function Home() {
       const updatedTask = await response.json();
       setTasks(tasks.map(task => task.id === selectedTaskId ? updatedTask : task));
     }
-  };
+  }, [selectedTaskId, setTasks, tasks]);
 
   const resetTimer = useCallback((mode: keyof typeof timerModes, autoStart = false) => {
     setTimerMode(mode);
@@ -106,7 +106,7 @@ export default function Home() {
         clearInterval(interval);
       }
     };
-  }, [isActive, time, timerMode, pomodoroCount, resetTimer, selectedTaskId]);
+  }, [isActive, time, timerMode, pomodoroCount, resetTimer, selectedTaskId, incrementPomodoro]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
