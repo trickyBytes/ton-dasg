@@ -9,6 +9,24 @@
     "id": "1771152970708",
     "text": "Task 2",
     "completed": false,
+    "pomodoros": 4
+  },
+  {
+    "id": "1771321692425",
+    "text": "asdasdsad",
+    "completed": false,
     "pomodoros": 1
+  },
+  {
+    "id": "1771922676770",
+    "text": "Team and API structure in Switchboard",
+    "completed": false,
+    "pomodoros": 1
+  },
+  {
+    "id": "1771927689607",
+    "text": "asdasdasd",
+    "completed": false,
+    "pomodoros": 0
   }
 ]

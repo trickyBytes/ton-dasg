@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 
 export default function Home() {
   const timerModes = useMemo(() => ({
-    pomodoro: 10, // 10 seconds for dev work
-    shortBreak: 10, // 10 seconds for dev work
-    longBreak: 30, // 30 seconds for dev work
+    pomodoro: 60 * 20, // 10 seconds for dev work
+    shortBreak: 60 * 5, // 10 seconds for dev work
+    longBreak: 60 * 15, // 30 seconds for dev work
   }), []);
 
   const [timerMode, setTimerMode] = useState("pomodoro");
@@ -177,9 +177,8 @@ export default function Home() {
                 <li
                   key={task.id}
                   onClick={() => setSelectedTaskId(task.id)}
-                  className={`flex items-center justify-between mb-2 p-2 rounded-lg cursor-pointer ${
-                    selectedTaskId === task.id ? 'bg-gray-700 border-l-4 border-red-500' : ''
-                  }`}
+                  className={`flex items-center justify-between mb-2 p-2 rounded-lg cursor-pointer ${selectedTaskId === task.id ? 'bg-gray-700 border-l-4 border-red-500' : ''
+                    }`}
                 >
                   <div className="flex items-center">
                     <input type="checkbox" checked={task.completed} readOnly className="mr-2" />
